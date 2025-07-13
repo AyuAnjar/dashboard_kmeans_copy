@@ -55,7 +55,7 @@ st.title("📂 Upload Data Penjualan")
 # </div>
 # """, unsafe_allow_html=True)
 
-st.info(
+st.markdown(
     """
 📤 **Silakan unggah file CSV** berisi data penjualan minuman kopi kemasan siap minum.  
 Pastikan file memiliki kolom penting seperti: `id_detail_transaksi_penjualan`, `no_transaksi_penjualan`, `kode_barang`, `nama_barang`, dan `qty`.
