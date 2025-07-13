@@ -55,13 +55,19 @@ st.title("📂 Upload Data Penjualan")
 # </div>
 # """, unsafe_allow_html=True)
 
-st.markdown("""
-<div class="info-box upload-note">
-📤 **Silakan unggah file CSV** berisi data penjualan minuman kopi kemasan siap minum.
+with st.container():
+    st.markdown(
+        """
+        <div style='background-color:#F0F8FF;padding:15px;border-left:6px solid #1E90FF;border-radius:5px;margin-bottom:15px'>
+        <span style='font-size:16px;color:#333'>
+        📤 **Silakan unggah file CSV** berisi data penjualan minuman kopi kemasan siap minum.  
+        Pastikan file memiliki kolom penting seperti: `id_detail_transaksi_penjualan`, `no_transaksi_penjualan`, `kode_barang`, `nama_barang`, dan `qty`.
+        </span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-Pastikan file memiliki kolom penting seperti: `id_detail_transaksi_penjualan`, `no_transaksi_penjualan`, `kode_barang`, `nama_barang`, dan `qty`.
-</div>
-""", unsafe_allow_html=True)
 
 
 st.markdown("### 📝 Contoh Format Kolom:")
