@@ -71,14 +71,29 @@ if 'clustered_df' in st.session_state:
 
     # Insight produk dengan penjualan tinggi saat hari libur
     st.subheader("⭐ Analisis Produk Penjualan Tinggi Terkait Hari Libur")
-    st.markdown("""
-        #### 📘 Penjelasan Kolom Interpretasi
-        Analisis ini bertujuan untuk melihat apakah terdapat **lonjakan penjualan** yang signifikan pada momen hari libur nasional. Untuk itu, digunakan perhitungan berbasis statistik dari rata-rata penjualan tiap produk.
-        - **`avg_global`**: Rata-rata total penjualan per bulan dari suatu produk sepanjang data yang tersedia.
-        - **`ambang_batas`**: Batas atas normal penjualan. Jika penjualan di bulan tertentu melebihi nilai ini, maka penjualan dianggap mengalami **peningkatan signifikan**.
-        - **`kenaikan_penjualan`**: Kenaikan penjualan produk pada bulan tersebut.
-        > Dengan pendekatan ini, Anda dapat melihat **produk mana yang benar-benar mengalami lonjakan penjualan** saat hari libur nasional tertentu, dan bukan hanya naik secara alami atau karena fluktuasi kecil.
-        """, unsafe_allow_html=True)
+    # st.markdown("""
+    #     #### 📘 Penjelasan Kolom Interpretasi
+    #     Analisis ini bertujuan untuk melihat apakah terdapat **lonjakan penjualan** yang signifikan pada momen hari libur nasional. Untuk itu, digunakan perhitungan berbasis statistik dari rata-rata penjualan tiap produk.
+    #     - **`avg_global`**: Rata-rata total penjualan per bulan dari suatu produk sepanjang data yang tersedia.
+    #     - **`ambang_batas`**: Batas atas normal penjualan. Jika penjualan di bulan tertentu melebihi nilai ini, maka penjualan dianggap mengalami **peningkatan signifikan**.
+    #     - **`kenaikan_penjualan`**: Kenaikan penjualan produk pada bulan tersebut.
+    #     > Dengan pendekatan ini, Anda dapat melihat **produk mana yang benar-benar mengalami lonjakan penjualan** saat hari libur nasional tertentu, dan bukan hanya naik secara alami atau karena fluktuasi kecil.
+    #     """, unsafe_allow_html=True)
+    st.markdown("#### 📘 Penjelasan Kolom Interpretasi")
+    st.markdown(
+        "Analisis ini bertujuan untuk melihat apakah terdapat **lonjakan penjualan** "
+        "yang signifikan pada momen hari libur nasional. Untuk itu, digunakan perhitungan "
+        "berbasis statistik dari rata-rata penjualan tiap produk."
+    )
+
+    st.markdown("- `avg_global`: Rata-rata total penjualan per bulan dari suatu produk sepanjang data yang tersedia.")
+    st.markdown("- `ambang_batas`: Batas atas normal penjualan. Jika melebihi nilai ini, dianggap **peningkatan signifikan**.")
+    st.markdown("- `kenaikan_penjualan`: Kenaikan penjualan produk pada bulan tersebut.")
+
+    st.info(
+        "📌 Dengan pendekatan ini, Anda dapat melihat **produk mana yang benar-benar mengalami lonjakan penjualan** "
+        "saat hari libur nasional tertentu, dan bukan hanya naik secara alami atau karena fluktuasi kecil."
+    )
 
     df_high_sales = df[df['kategori'] == 'Penjualan Tinggi'].copy()
     df_high_sales['hari_libur'] = df_high_sales['bulan'].map(hari_libur).fillna('Tidak ada hari libur')
