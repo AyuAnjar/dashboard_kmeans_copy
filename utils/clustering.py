@@ -44,7 +44,7 @@ def show_cluster_chart(df):
 
     fig = px.scatter(
         df,
-        x='jumlah_transaksi',
+        x='nama_barang',
         y='total_penjualan',
         color='kategori',
         color_discrete_map=color_map,
