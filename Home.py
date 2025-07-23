@@ -25,15 +25,11 @@ st.markdown("""
 
 # Judul besar
 st.title("📊 Selamat Datang di Dashboard Clustering Data Penjualan")
-# st.markdown("<h1 class='title-highlight'>📊 Selamat Datang di Dashboard Clustering Data Penjualan</h1>", unsafe_allow_html=True)
 
 # Subjudul informatif
 st.markdown("<div class='big-font'>👋 Halo! Dashboard ini dibuat untuk menganalisis pola penjualan minuman kopi kemasan siap minum menggunakan <i>K-Means Clustering</i>.</div>", unsafe_allow_html=True)
 st.markdown("---")
 
-# Dua kolom pembuka
-# col1, col2 = st.columns([2, 1])
-# with col1:
 st.subheader("🎯 Tujuan Dashboard")
 st.markdown("""
     <div class="highlight">

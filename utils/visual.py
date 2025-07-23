@@ -151,11 +151,5 @@ def hitung_statistik_kenaikan(df_all, df_sub, k=0.5):
         return pd.DataFrame(columns=['bulan', 'nama_barang', 'jumlah_transaksi', 'total_penjualan', 'avg_global', 'kenaikan_penjualan',
                                      'ambang_batas', 'kenaikan_signifikan'])
 
-# def format_percent(x):
-#     try:
-#         return f"{float(x):.1f}%"
-#     except:
-#         return "0.0%"
-
 def get_brand(product_name):
     return " ".join(product_name.split()[:2])

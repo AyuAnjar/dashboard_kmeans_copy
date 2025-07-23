@@ -71,29 +71,14 @@ if 'clustered_df' in st.session_state:
 
     # Insight produk dengan penjualan tinggi saat hari libur
     st.subheader("⭐ Analisis Produk Penjualan Tinggi Terkait Hari Libur")
-    # st.markdown("""
-    #     #### 📘 Penjelasan Kolom Interpretasi
-    #     Analisis ini bertujuan untuk melihat apakah terdapat **lonjakan penjualan** yang signifikan pada momen hari libur nasional. Untuk itu, digunakan perhitungan berbasis statistik dari rata-rata penjualan tiap produk.
-    #     - **`avg_global`**: Rata-rata total penjualan per bulan dari suatu produk sepanjang data yang tersedia.
-    #     - **`ambang_batas`**: Batas atas normal penjualan. Jika penjualan di bulan tertentu melebihi nilai ini, maka penjualan dianggap mengalami **peningkatan signifikan**.
-    #     - **`kenaikan_penjualan`**: Kenaikan penjualan produk pada bulan tersebut.
-    #     > Dengan pendekatan ini, Anda dapat melihat **produk mana yang benar-benar mengalami lonjakan penjualan** saat hari libur nasional tertentu, dan bukan hanya naik secara alami atau karena fluktuasi kecil.
-    #     """, unsafe_allow_html=True)
-    st.markdown("#### 📘 Penjelasan Kolom Interpretasi")
-    st.markdown(
-        "Analisis ini bertujuan untuk melihat apakah terdapat **lonjakan penjualan** "
-        "yang signifikan pada momen hari libur nasional. Untuk itu, digunakan perhitungan "
-        "berbasis statistik dari rata-rata penjualan tiap produk."
-    )
-
-    st.markdown("- `avg_global`: Rata-rata total penjualan per bulan dari suatu produk sepanjang data yang tersedia.")
-    st.markdown("- `ambang_batas`: Batas atas normal penjualan. Jika melebihi nilai ini, dianggap **peningkatan signifikan**.")
-    st.markdown("- `kenaikan_penjualan`: Kenaikan penjualan produk pada bulan tersebut.")
-
-    st.info(
-        "📌 Dengan pendekatan ini, Anda dapat melihat **produk mana yang benar-benar mengalami lonjakan penjualan** "
-        "saat hari libur nasional tertentu, dan bukan hanya naik secara alami atau karena fluktuasi kecil."
-    )
+    st.markdown("""
+        #### 📘 Penjelasan Kolom Interpretasi
+        Analisis ini bertujuan untuk melihat apakah terdapat **lonjakan penjualan** yang signifikan pada momen hari libur nasional. Untuk itu, digunakan perhitungan berbasis statistik dari rata-rata penjualan tiap produk.
+        - **`avg_global`**: Rata-rata total penjualan per bulan dari suatu produk sepanjang data yang tersedia.
+        - **`ambang_batas`**: Batas atas normal penjualan. Jika penjualan di bulan tertentu melebihi nilai ini, maka penjualan dianggap mengalami **peningkatan signifikan**.
+        - **`kenaikan_penjualan`**: Kenaikan penjualan produk pada bulan tersebut.
+        > Dengan pendekatan ini, Anda dapat melihat **produk mana yang benar-benar mengalami lonjakan penjualan** saat hari libur nasional tertentu, dan bukan hanya naik secara alami atau karena fluktuasi kecil.
+        """, unsafe_allow_html=True)
 
     df_high_sales = df[df['kategori'] == 'Penjualan Tinggi'].copy()
     df_high_sales['hari_libur'] = df_high_sales['bulan'].map(hari_libur).fillna('Tidak ada hari libur')
@@ -106,25 +91,6 @@ if 'clustered_df' in st.session_state:
             summary = hitung_statistik_kenaikan(df, grup)
 
             st.markdown(f"### 📌 {nama_libur}")
-
-            # # Hitung persentase kenaikan
-            # def calculate_percentage(row):
-            #     try:
-            #         if row['avg_global'] == 0:
-            #             return 0
-            #         return ((row['total_penjualan'] - row['avg_global']) / row['avg_global']) * 100
-            #     except:
-            #         return 0
-
-            # summary['persentase_kenaikan_num'] = summary.apply(calculate_percentage, axis=1).round(1)
-
-            # def format_percent(x):
-            #     try:
-            #         return f"{float(x):.1f}%"
-            #     except:
-            #         return "0.0%"
-
-            # summary['persentase_kenaikan'] = summary['persentase_kenaikan_num'].apply(format_percent)
 
             # Tentukan apakah kenaikan signifikan
             summary['kenaikan_signifikan'] = summary['total_penjualan'] > summary['ambang_batas']

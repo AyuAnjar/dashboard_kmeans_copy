@@ -5,7 +5,7 @@ import plotly.express as px
 import streamlit as st
 
 def elbow_method(df):
-    # Pivot data agar format cocok untuk clustering
+    # Pivot data 
     pivot = df.pivot_table(
         index=['kode_barang', 'nama_barang'],
         columns='bulan',
@@ -13,7 +13,7 @@ def elbow_method(df):
         fill_value=0
     )
     
-    # Scaling dilakukan sekali sebelum loop
+    # Scaling 
     scaler = StandardScaler()
     scaled_data = scaler.fit_transform(pivot)
 
@@ -35,7 +35,6 @@ def show_elbow_chart(distortions):
     st.plotly_chart(fig)
 
 def show_cluster_chart(df):
-    # Warna ditentukan secara manual agar konsisten
     color_map = {
         'Penjualan Rendah': 'red',
         'Penjualan Sedang': 'orange',

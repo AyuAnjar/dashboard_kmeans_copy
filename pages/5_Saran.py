@@ -3,6 +3,8 @@ from datetime import datetime
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from io import BytesIO
+from collections import defaultdict
+from utils.visual import get_hari_libur_bulanan
 
 # Layout penuh
 st.set_page_config(layout="wide")
@@ -49,18 +51,25 @@ def generate_recommendations(signifikan_products):
             <ul style='margin-bottom:0;'>
         """
         
-        for product in products:
-            # Persediaan 
+        gabung_produk = defaultdict(lambda: {'total': 0.0, 'count': 0})
+
+        for p in products:
+            nama = p['produk']
             try:
-                kenaikan_float = float(str(product['kenaikan_penjualan']).strip())
-                avg_float = float(str(product['avg_global']).strip())
+                kenaikan = float(str(p['kenaikan_penjualan']).strip())
+                avg_global = float(str(p['avg_global']).strip())
+                total = kenaikan + avg_global
+
+                gabung_produk[nama]['total'] += total
+                gabung_produk[nama]['count'] += 1
             except:
-                kenaikan_float = 0.0  
-                avg_float = 0.0
+                pass  # biarkan nilai default 0.0
 
-            estimated_increase = (avg_float + kenaikan_float)
-
-            rec_stock += f"<li>Tambahkan stok <strong>{product['produk']}</strong> sebanyak {estimated_increase:.0f} pcs</li>"
+        # Buat list rekomendasi setelah digabung
+        for nama, data in gabung_produk.items():
+            if data['count'] > 0:
+                estimated_avg = data['total'] / data['count']
+                rec_stock += f"<li>Tambahkan stok <strong>{nama}</strong> sebanyak {estimated_avg:.0f} pcs</li>"
         
         rec_stock += "</ul></div>"
         
@@ -130,18 +139,6 @@ if 'signifikan_products' in st.session_state and st.session_state.signifikan_pro
     </div>
     """, unsafe_allow_html=True)
 
-    # # Rekomendasi persiapan
-    # st.markdown("""
-    # <div class='penataan-box'>
-    #     <div class='recommendation-header'>⏰ Rekomendasi Timeline Persiapan
-    #         <ul>
-    #             <li> 1 bulan sebelumnya: Lakukan pemesanan tambahan stok</li>
-    #             <li> 2 minggu sebelumnya: Atur ulang tata letak produk</li>
-    #             <li> 1 minggu sebelumnya: Pasang promo dan signage atau papan penanda khusus</li>
-    #         </ul>
-    #     </div>
-    # </div>
-    # """, unsafe_allow_html=True)
     st.write("---")
 
     # Rekomendasi umum
@@ -233,12 +230,28 @@ def create_pdf(signifikan_products):
     c.setFont("Helvetica-Bold", 11)
     y = draw_wrapped_text("1. Rekomendasi Penambahan Stok per Produk:", "Helvetica-Bold", 11, margin_x + 18, y)
     c.setFont("Helvetica", 10)
+
     for libur, products in signifikan_products.items():
         y = draw_wrapped_text(f"- {libur}", "Helvetica", 10, margin_x + 30, y)
+        
+        gabung_produk = defaultdict(lambda: {'total': 0.0, 'count': 0})
         for p in products:
             nama = p.get('produk', '-')
-            kenaikan_penjualan = p.get('kenaikan_penjualan', 0)
-            teks = f"• Tambahkan stok {nama} sebanyak {kenaikan_penjualan:.2f} pcs"
+            try:
+                kenaikan = float(p.get('kenaikan_penjualan', 0))
+                avg = float(p.get('avg_global', 0))
+                total = kenaikan + avg
+
+                gabung_produk[nama]['total'] += total
+                gabung_produk[nama]['count'] += 1
+            except:
+                continue
+
+        # Kemudian render
+        for nama, data in gabung_produk.items():
+            if data['count'] > 0:
+                rata = data['total'] / data['count']
+                teks = f"• Tambahkan stok {nama} sebanyak {rata:.0f} pcs"
             y = draw_wrapped_text(teks, "Helvetica", 10, margin_x + 40, y, indent=10)
             if y < 60:  
                 c.showPage()
@@ -283,136 +296,3 @@ if 'signifikan_products' in st.session_state and st.session_state.signifikan_pro
         file_name="rekomendasi_penjualan_hari_libur.pdf",
         mime="application/pdf"
     )
-    # # Fungsi buat PDF
-    # def create_pdf(signifikan_products):
-    #     buffer = BytesIO()
-    #     c = canvas.Canvas(buffer, pagesize=A4)
-    #     width, height = A4
-    #     y = height - 40
-    #     line_spacing = 16
-
-    #     c.setFont("Helvetica-Bold", 14)
-    #     c.drawString(40, y, "A. Kesimpulan: Produk dengan Kenaikan Signifikan per Hari Libur")
-    #     y -= 25
-
-    #     c.setFont("Helvetica", 11)
-    #     for libur, products in signifikan_products.items():
-    #         c.setFont("Helvetica-Bold", 11)
-    #         c.drawString(40, y, f"- {libur}")
-    #         y -= line_spacing
-    #         c.setFont("Helvetica", 10)
-    #         for p in products:
-    #             nama = p.get('produk', '-')
-    #             bulan = p.get('bulan', '-')
-    #             penjualan = p.get('penjualan', '-')
-    #             kenaikan_penjualan = p.get('kenaikan_penjualan', 0)
-
-    #             teks = f"- {nama} ({bulan}): produk terjual= {penjualan} pcs (↑{kenaikan_penjualan:.2f} pcs)"
-    #             c.drawString(50, y, teks)
-    #             y -= line_spacing
-    #             if y < 100:
-    #                 c.showPage()
-    #                 y = height - 40
-    #                 c.setFont("Helvetica", 10)
-
-    #         # for p in products:
-    #         #     nama = p.get('produk', '-')
-    #         #     bulan = p.get('bulan', '-')
-    #         #     penjualan = p.get('penjualan', '-')
-    #         #     kenaikan_penjualan = p.get('kenaikan_penjualan', '-')
-    #         #     # teks = f"  • Bulan: {bulan} | Produk: {nama} | Penjualan: {penjualan} | Kenaikan: {kenaikan_penjualan}"
-    #         #     teks = f"- **{products['produk']}** ({products['bulan']}): "f"produk terjual= {products['penjualan']:.0f} pcs (↑{products['kenaikan_penjualan']:.2f})"
-    #         #     c.drawString(50, y, teks)
-    #         #     y -= line_spacing
-    #         #     if y < 100:
-    #         #         c.showPage()
-    #         #         y = height - 40
-    #         #         c.setFont("Helvetica", 10)
-    #         y -= 8
-
-    #     y -= 12
-    #     c.setFont("Helvetica-Bold", 14)
-    #     c.drawString(40, y, "B. Rekomendasi Persediaan & Penataan Barang")
-    #     y -= 25
-
-    #     # Rekomendasi Persediaan
-    #     c.setFont("Helvetica-Bold", 11)
-    #     c.drawString(40, y, "1. Rekomendasi Penambahan Stok per Produk:")
-    #     y -= line_spacing
-    #     c.setFont("Helvetica", 10)
-    #     for libur, products in signifikan_products.items():
-    #         c.drawString(50, y, f"- {libur}")
-    #         y -= line_spacing
-    #         for p in products:
-    #             nama = p.get('produk', '-')
-    #             kenaikan_penjualan = p.get('kenaikan_penjualan', 0)
-
-    #             teks = f"  • Tambahkan stok {nama} sebanyak {kenaikan_penjualan} pcs"
-    #             c.drawString(60, y, teks)
-    #             y -= line_spacing
-
-    #             if y < 100:
-    #                 c.showPage()
-    #                 y = height - 40
-    #                 c.setFont("Helvetica", 10)
-    #         y -= 8
-
-    #     # Penataan Barang
-    #     y -= 12
-    #     c.setFont("Helvetica-Bold", 11)
-    #     c.drawString(40, y, "2. Rekomendasi Penataan Barang:")
-    #     y -= line_spacing
-    #     c.setFont("Helvetica", 10)
-    #     penataan = [
-    #         "Letakkan minuman kopi kemasan siap minum di area yang berdekatan dengan makanan ringan seperti roti, biskuit, atau snack",
-    #         "Tambahkan label “Favorit Saat Istirahat” atau “Minuman Paling Dicari!” di sekitar produk."
-    #     ]
-    #     for p in penataan:
-    #         c.drawString(50, y, f"- {p}")
-    #         y -= line_spacing
-
-    #     # # Timeline Persiapan
-    #     # y -= 20
-    #     # c.setFont("Helvetica-Bold", 11)
-    #     # c.drawString(40, y, "3. Rekomendasi Timeline Persiapan:")
-    #     # y -= line_spacing
-    #     # c.setFont("Helvetica", 10)
-    #     # timeline = [
-    #     #     "1 bulan sebelumnya: Lakukan pemesanan tambahan stok",
-    #     #     "2 minggu sebelumnya: Atur ulang tata letak produk",
-    #     #     "1 minggu sebelumnya: Pasang promo dan signage khusus"
-    #     # ]
-    #     # for t in timeline:
-    #     #     c.drawString(50, y, f"- {t}")
-    #     #     y -= line_spacing
-
-    #     # Tambahan
-    #     y -= 20
-    #     c.setFont("Helvetica-Bold", 11)
-    #     c.drawString(40, y, "3. Rekomendasi Tambahan:")
-    #     y -= line_spacing
-    #     c.setFont("Helvetica", 10)
-    #     tambahan = [
-    #         "Lakukan evaluasi stok seminggu setelah hari libur untuk menyesuaikan level persediaan",
-    #         "Lakukan perhitungan clustering menggunakan aplikasi ini untuk menganalisis pola penjualan"
-    #     ]
-    #     for t in tambahan:
-    #         c.drawString(50, y, f"- {t}")
-    #         y -= line_spacing
-    #         if y < 100:
-    #             c.showPage()
-    #             y = height - 40
-    #             c.setFont("Helvetica", 10)
-
-    #     c.save()
-    #     buffer.seek(0)
-    #     return buffer
-
-    # pdf_file = create_pdf(signifikan_products)
-
-    # st.download_button(
-    #     label="📥 Download PDF Rekomendasi & Kesimpulan",
-    #     data=pdf_file,
-    #     file_name="rekomendasi_penjualan_hari_libur.pdf",
-    #     mime="application/pdf"
-    # )
